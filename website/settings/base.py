@@ -25,7 +25,7 @@ SECRET_KEY = '(il$t#&mste-98uj6_ry2y6n5m)!zyb9wr7v&+#u64^@p1rpof'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['patrickpages.com']
 
 
 # Application definition
