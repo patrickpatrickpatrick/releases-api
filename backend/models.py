@@ -6,6 +6,7 @@ class Merch(models.Model):
     price = models.TextField()
     stock = models.BooleanField()
     url = models.TextField()
+    merch_id = models.TextField()
     owner = models.ForeignKey('auth.User', related_name='merch', on_delete=models.CASCADE)
 
 class Release(models.Model):

@@ -7,7 +7,7 @@ class MerchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Merch
-        fields = ('id', 'name', 'url', 'stock', 'item', 'price','owner',)
+        fields = ('id', 'name', 'url', 'stock', 'item', 'price','owner','merch_id',)
 
 class ReleaseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
