@@ -3,11 +3,15 @@ from rest_framework import viewsets
 from backend.models import Merch, Release, Video
 from backend.serializers import MerchSerializer, ReleaseSerializer, VideoSerializer
 from rest_framework import permissions
+import django_filters.rest_framework
 
 class MerchViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = Merch.objects.all()
     serializer_class = MerchSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    # filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('merch_id',)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

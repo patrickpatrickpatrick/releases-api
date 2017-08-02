@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from backend.models import Merch, Release, Video
 from django.contrib.auth.models import User
+from rest_framework import filters
 
 class MerchSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -15,6 +16,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Release
         fields = ('id', 'name', 'artist', 'url', 'embed', 'release_number', 'medium', 'release_id','description','owner',)
+        # filter_backends = (DjangoFilterBackend,)
 
 class VideoSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -22,6 +24,7 @@ class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = ('id', 'name', 'artist', 'embed','owner',)
+        # filter_backends = (DjangoFilterBackend,)
 
 class UserSerializer(serializers.ModelSerializer):
     merch = serializers.PrimaryKeyRelatedField(many=True, queryset=Merch.objects.all())
@@ -31,3 +34,4 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'merch', 'releases', 'videos')
+
