@@ -10,7 +10,6 @@ class MerchViewSet(viewsets.ModelViewSet):
     queryset = Merch.objects.all()
     serializer_class = MerchSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    # filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('merch_id',)
 
     def perform_create(self, serializer):
@@ -20,6 +19,8 @@ class ReleaseViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_fields = ('release_id',)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -28,6 +29,7 @@ class VideoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

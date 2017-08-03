@@ -2,8 +2,8 @@ from django.db import models
 
 class Merch(models.Model):
     name = models.TextField()
-    item = models.TextField()
-    price = models.TextField()
+    item = models.TextField(blank=True)
+    price = models.TextField(blank=True)
     stock = models.BooleanField()
     url = models.TextField()
     merch_id = models.TextField()
