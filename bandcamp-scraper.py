@@ -16,12 +16,33 @@ def bandcamp_embed_code(id):
 def youtube_embed_code(video):
     return
 
-def does_resource_exist(resource, id):
-    len(json.loads(requests.get("http://127.0.0.1:8000/" + resource + '/?' + resource + '=' + id).text)) > 0
+def does_resource_exist(resource, json_to_send):
+    # not possible to get when the resource was last updated from page so this method
+    # will determine if the item needs to be updated or not...
+
+    existing_resource = json.loads(requests.get("http://127.0.0.1:8000/" + resource + '/?' + resource + '_id=' + str(json_to_send[resource + "_id"])).text)
+
+    if len(existing_resource) > 0:
+        existing_resource_id = existing_resource[0].pop('id', None)
+        existing_resource[0].pop('owner', None)
+
+        print('*******')
+        print(existing_resource[0])
+        print('-------')
+        print(json_to_send)
+        print('*******')
+        if existing_resource[0] == json_to_send:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 def post_auth(resource, data):
     r = requests.post(API_URL + resource + '/', json=data, headers={"Authorization": "Token " + AUTH_TOKEN})
-    print(r.text)
+
+def delete_auth(resource, id):
+    r = requests.delete(API_URL + resource + '/' + str(id), headers={"Authorization": "Token " + AUTH_TOKEN})
 
 def scrape_videos():
     return 'uuuhhh'
@@ -95,7 +116,10 @@ def scrape_releases():
              "price": price
             }
 
-            post_auth('merch', merch_json)
+
+
+
+            # post_auth('merch', merch_json)
 
 
 
@@ -110,17 +134,19 @@ def scrape_merch():
 
         merch_json = ({
             "name": merch["title"],
-            "price": merch["price"],
+            "price": str(merch["price"]),
             "item": merch["type_name"],
             "stock": True if (merch["quantity_available"] is not None and merch["quantity_available"] > 0) else False,
             "url": merch["url"],
-            "merch_id": merch["id"]
+            "merch_id": str(merch["id"])
         })
 
-        for idx,image in enumerate(merch['arts']):
-            urllib.request.urlretrieve('https://f4.bcbits.com/img/00' + str(image['image_id']) + '_10.jpg', str(merch["id"]) + "-" + str(idx) + ".jpg")
+        # for idx,image in enumerate(merch['arts']):
+        #     urllib.request.urlretrieve('https://f4.bcbits.com/img/00' + str(image['image_id']) + '_10.jpg', str(merch["id"]) + "-" + str(idx) + ".jpg")
         
-        post_auth('merch', merch_json)
+        print(does_resource_exist('merch', merch_json))
+
+        # print(post_auth('merch', merch_json))
 
 def scrape():
     scrape_merch()
