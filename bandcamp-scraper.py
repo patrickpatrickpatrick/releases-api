@@ -13,7 +13,7 @@ API_URL = "http://127.0.0.1:8000/"
 AUTH_TOKEN = json.loads(requests.post("http://127.0.0.1:8000/api-token-auth/", json={"username":"patrick","password":"cv34erdf"}).text)['token']
 
 def bandcamp_embed_code(id):
-    return "<iframe style='border: 0; width: 500px; height: 796px;' src='https://bandcamp.com/EmbeddedPlayer/album=" + str(id) + "/size=large/bgcol=ffffff/linkcol=0687f5/package=967020329/transparent=true/'' seamless''></iframe>"
+    return "<iframe style='border: 0; width: 500px; height: 796px;' src='https://bandcamp.com/EmbeddedPlayer/album=" + str(id) + "/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/'' seamless''></iframe>"
 
 def youtube_embed_code(video):
     return
@@ -33,9 +33,7 @@ def does_resource_exist(resource, json_to_send):
         if existing_resource[0] == json_to_send:
             return True
         else:
-            print(existing_resource)
-            print(json_to_send)
-            delete_auth('merch', existing_resource_id)
+            delete_auth(resource, existing_resource_id)
             return False
     else:
         return False
@@ -158,8 +156,8 @@ def scrape_merch():
             post_auth('merch', merch_json)
 
 def scrape():
-    # scrape_releases()
-    # scrape_merch()
+    scrape_releases()
+    scrape_merch()
     # scrape_videos()
 
 if __name__ == "__main__":
