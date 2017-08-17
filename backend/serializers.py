@@ -7,21 +7,21 @@ class MerchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Merch
-        fields = ('id', 'name', 'url', 'stock', 'item', 'price','owner','merch_id',)
+        fields = ('id', 'name', 'url', 'stock', 'item', 'price','owner','merch_id','release_date',)
 
 class ReleaseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Release
-        fields = ('id', 'name', 'artist', 'url', 'embed', 'release_number', 'medium', 'release_id','description','owner',)
+        fields = ('id', 'name', 'artist', 'url', 'embed', 'release_number', 'medium', 'release_id','description','owner','release_date',)
 
 class VideoSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Video
-        fields = ('id', 'name', 'artist', 'embed','owner',)
+        fields = ('id', 'name', 'artist', 'embed','owner','release_date',)
 
 class UserSerializer(serializers.ModelSerializer):
     merch = serializers.PrimaryKeyRelatedField(many=True, queryset=Merch.objects.all())

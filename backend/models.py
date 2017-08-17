@@ -8,6 +8,7 @@ class Merch(models.Model):
     url = models.TextField()
     merch_id = models.TextField()
     owner = models.ForeignKey('auth.User', related_name='merch', on_delete=models.CASCADE)
+    release_date = models.DateTimeField(blank=True)
 
 class Release(models.Model):
     name = models.TextField()
@@ -19,11 +20,13 @@ class Release(models.Model):
     release_id = models.TextField()
     description = models.TextField(blank=True)
     owner = models.ForeignKey('auth.User', related_name='releases', on_delete=models.CASCADE)
+    release_date = models.DateTimeField(blank=True)
 
 class Video(models.Model):
     name = models.TextField()
     artist = models.TextField()
     embed = models.TextField()
     owner = models.ForeignKey('auth.User', related_name='videos', on_delete=models.CASCADE)
+    release_date = models.DateTimeField(blank=True)
 
 # Create your models here.

@@ -6,6 +6,7 @@ import simplejson as json
 import re
 import urllib.request
 import locale
+from dateutil.parser import parse
 # from youtube import YouTube
 
 BANDCAMP_URL = "https://" + os.environ['BANDCAMP_LABEL'] + ".bandcamp.com/"
@@ -18,8 +19,7 @@ def bandcamp_embed_code(id):
 def youtube_embed_code(video):
     return
 
-def does_resource_exist(resource, json_to_send):
-
+def update_existing_resource(resource, json_to_send):
     if resource != 'merch':
         resource_key = resource[:-1] + "_id"
     else:
@@ -30,13 +30,9 @@ def does_resource_exist(resource, json_to_send):
     if len(existing_resource) > 0:
         existing_resource_id = existing_resource[0].pop('id', None)
         existing_resource[0].pop('owner', None)
-        if existing_resource[0] == json_to_send:
-            return True
-        else:
-            delete_auth(resource, existing_resource_id)
-            return False
-    else:
-        return False
+
+        if existing_resource[0] != json_to_send:
+            update_auth(resource, existing_resource_id, json_to_send)
 
 def post_auth(resource, data):
     r = requests.post(API_URL + resource + '/', json=data, headers={"Authorization": "Token " + AUTH_TOKEN})
@@ -45,10 +41,16 @@ def post_auth(resource, data):
         print(r.content)
         print(data)
 
-def delete_auth(resource, id):
-    r = requests.delete(API_URL + resource + '/' + str(id), headers={"Authorization": "Token " + AUTH_TOKEN})
+def update_auth(resource, id, data):
+    r = requests.patch(API_URL + resource + '/' + str(id) + '/', json=data, headers={"Authorization": "Token " + AUTH_TOKEN})
     if r.status_code == 400:
         print(r.content)
+
+
+# def delete_auth(resource, id):
+#     r = requests.delete(API_URL + resource + '/' + str(id), headers={"Authorization": "Token " + AUTH_TOKEN})
+#     if r.status_code == 400:
+#         print(r.content)
 
 def scrape_videos():
     return 'uuuhhh'
@@ -81,10 +83,10 @@ def scrape_releases():
             "embed": bandcamp_embed_code(release["id"]),
             "release_id": str(release["id"]),
             "url": release["page_url"],
+            "release_date": str(parse(release["publish_date"]).isoformat())
         })
 
-        if (not does_resource_exist('releases', release_json)):
-            post_auth('releases', release_json)
+        update_existing_resource('releases', release_json)
 
         merch_on_release_page = release_page.select('.tralbumCommands .buyItem')
 
@@ -118,11 +120,11 @@ def scrape_releases():
              "merch_id": str(merch_id),
              "url": release["page_url"],
              "stock": len(merch.select('.buy-link')) > 0,
-             "price": str(price)
+             "price": str(price),
+             "release_date": str(parse(release["publish_date"]).isoformat())
             }
 
-            if (not does_resource_exist('merch', merch_json)):
-                post_auth('merch', merch_json)
+            update_existing_resource('merch', merch_json)
 
 def scrape_merch():
     locale.setlocale( locale.LC_ALL, 'en_US' )
@@ -146,14 +148,16 @@ def scrape_merch():
             "item": merch["type_name"],
             "stock": True if (merch["quantity_available"] is not None and merch["quantity_available"] > 0) else False,
             "url": merch["url"],
-            "merch_id": str(merch["id"])
+            "merch_id": str(merch["id"]),
         })
+        
+        if merch["album_publish_date"] != None:
+            merch_json["release_date"] = str(parse(merch["album_publish_date"]).isoformat())
 
         # for idx,image in enumerate(merch['arts']):
         #     urllib.request.urlretrieve('https://f4.bcbits.com/img/00' + str(image['image_id']) + '_10.jpg', str(merch["id"]) + "-" + str(idx) + ".jpg")
         
-        if (not does_resource_exist('merch', merch_json)):
-            post_auth('merch', merch_json)
+        update_existing_resource('merch', merch_json)
 
 def scrape():
     scrape_releases()
